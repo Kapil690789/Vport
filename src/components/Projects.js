@@ -36,12 +36,15 @@ const Projects = () => {
   return (
     <section id="projects" className="py-20 bg-gray-800">
       <div className="container mx-auto text-center">
-        <h2 className="text-4xl font-bold mb-10">Projects</h2>
+        <h2 className="text-4xl font-bold mb-10 text-white">Projects</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project, index) => (
-            <div key={index} className="bg-gray-700 p-6 rounded-lg">
-              <h3 className="text-2xl font-semibold mb-2">{project.title}</h3>
-              <p className="mb-4">{project.description}</p>
+            <div
+              key={index}
+              className="bg-gray-700 p-6 rounded-lg transition-transform transform hover:scale-105 hover:bg-gray-600"
+            >
+              <h3 className="text-2xl font-semibold mb-2 text-white">{project.title}</h3>
+              <p className="mb-4 text-gray-300">{project.description}</p>
               {project.link && (
                 <a
                   href={project.link}
