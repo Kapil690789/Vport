@@ -21,23 +21,22 @@ const categories = [
 ];
 
 const Skills = () => {
-  const [isVisible, setIsVisible] = useState(false); // State to track if section is in view
-  const sectionRef = useRef(null); // Ref to monitor the skills section
+  const [isVisible, setIsVisible] = useState(false); // Track if section is visible
+  const sectionRef = useRef(null); // Reference to the section
 
+  // Intersection Observer to trigger animation when the section comes into view
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setIsVisible(true); // Set visibility to true when section is in view
-          observer.unobserve(entry.target); // Stop observing after the first view
+          setIsVisible(true);
+          observer.unobserve(entry.target);
         }
       },
-      { threshold: 0.2 } // Trigger when 20% of the section is in view
+      { threshold: 0.2 } // Trigger when 20% of the section is visible
     );
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
+    if (sectionRef.current) observer.observe(sectionRef.current);
 
     return () => observer.disconnect();
   }, []);
@@ -46,8 +45,8 @@ const Skills = () => {
     <section
       id="skills"
       ref={sectionRef}
-      className={`py-20 bg-gray-900 transition-opacity duration-1000 ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+      className={`py-20 bg-gray-900 transition-all duration-1000 ease-out ${
+        isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-90'
       }`}
     >
       <div className="container mx-auto text-center">
@@ -57,9 +56,14 @@ const Skills = () => {
           {categories.map((category, index) => (
             <div
               key={index}
-              className="bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+              className="bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:-translate-y-2 hover:scale-105"
             >
-              <div className="flex items-center justify-center mb-4">{category.icon}</div>
+              <div className="flex items-center justify-center mb-4">
+                {/* Icon with hover animation */}
+                <div className="transition-transform duration-300 hover:scale-110">
+                  {category.icon}
+                </div>
+              </div>
               <h3 className="text-2xl font-semibold mb-4 text-white">{category.title}</h3>
               <ul className="space-y-2">
                 {category.skills.map((skill, i) => (

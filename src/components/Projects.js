@@ -33,18 +33,19 @@ const projects = [
 ];
 
 const Projects = () => {
-  const [isVisible, setIsVisible] = useState(false); // Track visibility
-  const sectionRef = useRef(null); // Reference to the section
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef(null);
 
+  // Intersection Observer to detect when the section is in view
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setIsVisible(true); // Set visible when section comes into view
-          observer.unobserve(entry.target); // Stop observing after animation triggers
+          setIsVisible(true);
+          observer.unobserve(entry.target);
         }
       },
-      { threshold: 0.1 } // Trigger when 10% of section is visible
+      { threshold: 0.2 }
     );
 
     if (sectionRef.current) {
@@ -63,9 +64,9 @@ const Projects = () => {
           {projects.map((project, index) => (
             <div
               key={index}
-              className={`bg-gray-700 p-6 rounded-lg transition-transform duration-1000 transform ${
-                isVisible ? 'animate-door' : 'translate-x-full'
-              }`}
+              className={`bg-gray-700 p-6 rounded-lg transform transition-all duration-1000 ease-out ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
+              } hover:scale-105 hover:rotate-1 hover:bg-gray-600 shadow-lg hover:shadow-xl`}
             >
               <h3 className="text-2xl font-semibold mb-2 text-white">{project.title}</h3>
               <p className="mb-4 text-gray-300">{project.description}</p>
