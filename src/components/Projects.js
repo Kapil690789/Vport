@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 const projects = [
   {
@@ -33,15 +33,39 @@ const projects = [
 ];
 
 const Projects = () => {
+  const [isVisible, setIsVisible] = useState(false); // Track visibility
+  const sectionRef = useRef(null); // Reference to the section
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true); // Set visible when section comes into view
+          observer.unobserve(entry.target); // Stop observing after animation triggers
+        }
+      },
+      { threshold: 0.1 } // Trigger when 10% of section is visible
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section id="projects" className="py-20 bg-gray-800">
+    <section id="projects" ref={sectionRef} className="py-20 bg-gray-800">
       <div className="container mx-auto text-center">
         <h2 className="text-4xl font-bold mb-10 text-white">Projects</h2>
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project, index) => (
             <div
               key={index}
-              className="bg-gray-700 p-6 rounded-lg transition-transform transform hover:scale-105 hover:bg-gray-600"
+              className={`bg-gray-700 p-6 rounded-lg transition-transform duration-1000 transform ${
+                isVisible ? 'animate-door' : 'translate-x-full'
+              }`}
             >
               <h3 className="text-2xl font-semibold mb-2 text-white">{project.title}</h3>
               <p className="mb-4 text-gray-300">{project.description}</p>

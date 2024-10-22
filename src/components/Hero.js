@@ -1,4 +1,5 @@
 import { FaLinkedin, FaGithub, FaEnvelope, FaCode } from 'react-icons/fa'; // Updated import
+const leetcodeLogo = 'https://upload.wikimedia.org/wikipedia/commons/1/19/LeetCode_logo_black.png';
 
 const Hero = () => {
   return (
@@ -36,14 +37,22 @@ const Hero = () => {
           >
             <FaGithub size={30} />
           </a>
-          <a
+          
+            <a
+            href="https://leetcode.com/u/kapil1909/"
+              target="_blank"
+                 rel="noopener noreferrer"
+             >
+        <img src={leetcodeLogo} alt="LeetCode" className="w-8 h-8" />
+           </a>
+          {/* <a
             href="https://leetcode.com/u/kapil1909/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-teal-400 hover:text-teal-600 transition-colors"
           >
             <FaCode size={30} />
-          </a>
+          </a> */}
           <a
             href="mailto:kapil19092003@gmail.com"
             className="text-teal-400 hover:text-teal-600 transition-colors"
