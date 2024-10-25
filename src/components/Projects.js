@@ -56,19 +56,31 @@ const Projects = () => {
   }, []);
 
   return (
-    <section id="projects" ref={sectionRef} className="py-20 bg-gray-800">
-      <div className="container mx-auto text-center">
+    <section
+      id="projects"
+      ref={sectionRef}
+      className="py-20 bg-cover bg-center relative"
+      style={{
+        backgroundImage: `url('https://e1.pxfuel.com/desktop-wallpaper/727/195/desktop-wallpaper-blue-aqua-digital-art-circuitry-gray-black-artwork-abstract-geometry-abstract-black-thumbnail.jpg')`,
+      }}
+    >
+      {/* Overlay to improve text readability */}
+      <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+
+      <div className="relative z-10 container mx-auto text-center">
         <h2 className="text-4xl font-bold mb-10 text-white">Projects</h2>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project, index) => (
             <div
               key={index}
-              className={`bg-gray-700 p-6 rounded-lg transform transition-all duration-1000 ease-out ${
+              className={`bg-gray-700 bg-opacity-80 p-6 rounded-lg transform transition-all duration-1000 ease-out ${
                 isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
               } hover:scale-105 hover:rotate-1 hover:bg-gray-600 shadow-lg hover:shadow-xl`}
             >
-              <h3 className="text-2xl font-semibold mb-2 text-white">{project.title}</h3>
+              <h3 className="text-2xl font-semibold mb-2 text-white">
+                {project.title}
+              </h3>
               <p className="mb-4 text-gray-300">{project.description}</p>
               {project.link && (
                 <a

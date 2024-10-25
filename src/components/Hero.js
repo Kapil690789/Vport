@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { FaLinkedin, FaGithub, FaEnvelope, FaCode } from 'react-icons/fa'; // Updated import
+import { FaLinkedin, FaGithub, FaEnvelope, FaCode } from 'react-icons/fa';
 
 const leetcodeLogo = 'https://upload.wikimedia.org/wikipedia/commons/1/19/LeetCode_logo_black.png';
 
 const Hero = () => {
-  // State for user visits (localStorage-based) and site-wide visit tracking
-  const [userVisits, setUserVisits] = useState(0);
-  const [totalVisits, setTotalVisits] = useState(0); // Total visits across sessions
+  const [userVisits, setUserVisits] = useState(0); // Track user's visits
+  const [totalVisits, setTotalVisits] = useState(0); // Track total visits across users
 
   useEffect(() => {
-    // Track user visits using localStorage
+    // Track user-specific visits using localStorage
     const visitCount = parseInt(localStorage.getItem('visitCount') || '0');
     const newVisitCount = visitCount + 1;
     localStorage.setItem('visitCount', newVisitCount);
     setUserVisits(newVisitCount);
 
-    // Simulate total visits (normally you'd track this on a backend)
+    // Simulate total visits across all users (backend alternative)
     const totalSiteVisits = parseInt(localStorage.getItem('totalVisits') || '0') + 1;
     localStorage.setItem('totalVisits', totalSiteVisits);
     setTotalVisits(totalSiteVisits);

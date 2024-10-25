@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { FaHtml5, FaCss3Alt, FaJsSquare, FaReact, FaNodeJs, FaGitAlt, FaAws } from 'react-icons/fa';
-import { SiMongodb, SiTailwindcss, SiLinux, SiCplusplus } from 'react-icons/si';
+import { FaHtml5, FaCss3Alt, FaJsSquare, FaReact, FaNodeJs, FaGitAlt, FaAws, FaJava } from 'react-icons/fa'; // Updated import
+import { SiMongodb, SiTailwindcss, SiLinux } from 'react-icons/si'; // Removed C++ icon
 
 const categories = [
   {
     title: 'Programming Languages',
-    icon: <SiCplusplus size={40} className="text-blue-500" />,
+    icon: <FaJava size={40} className="text-red-500" />, // Changed to Java icon
     skills: ['C', 'C++', 'Java', 'JavaScript', 'Data Structures', 'Algorithms'],
   },
   {
@@ -45,21 +45,26 @@ const Skills = () => {
     <section
       id="skills"
       ref={sectionRef}
-      className={`py-20 bg-gray-900 transition-all duration-1000 ease-out ${
+      className={`relative py-20 bg-cover bg-center transition-all duration-1000 ease-out ${
         isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-90'
       }`}
+      style={{
+        backgroundImage: `url('https://e1.pxfuel.com/desktop-wallpaper/489/946/desktop-wallpaper-aerial-view-of-abstract-futuristic-binary-city-a-high-high-tech-city.jpg')`,
+      }}
     >
-      <div className="container mx-auto text-center">
+      {/* Overlay for better text contrast */}
+      <div className="absolute inset-0 bg-black bg-opacity-60"></div>
+
+      <div className="relative z-10 container mx-auto text-center">
         <h2 className="text-4xl font-bold mb-10 text-white">Skills</h2>
 
         <div className="grid md:grid-cols-3 gap-8">
           {categories.map((category, index) => (
             <div
               key={index}
-              className="bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:-translate-y-2 hover:scale-105"
+              className="bg-gray-800 bg-opacity-80 p-6 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:-translate-y-2 hover:scale-105"
             >
               <div className="flex items-center justify-center mb-4">
-                {/* Icon with hover animation */}
                 <div className="transition-transform duration-300 hover:scale-110">
                   {category.icon}
                 </div>
