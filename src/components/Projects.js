@@ -10,7 +10,7 @@ const projects = [
     title: 'Prescripto',
     description: 'Doctor Appointment System based on MERN Stack Project and also admin/doctor link  ',
      link: 'https://prescripto-frontend-616t.onrender.com',
-     link: 'https://prescripto-admin-veng.onrender.com/add-doctor'
+     
   },
   {
     title: 'Simon Game',
