@@ -1,25 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { FaLinkedin, FaGithub, FaEnvelope, FaCode } from 'react-icons/fa';
 
 const leetcodeLogo = 'https://upload.wikimedia.org/wikipedia/commons/1/19/LeetCode_logo_black.png';
 
 const Hero = () => {
-  const [userVisits, setUserVisits] = useState(0); // Track user's visits
-  const [totalVisits, setTotalVisits] = useState(0); // Track total visits across users
-
-  useEffect(() => {
-    // Track user-specific visits using localStorage
-    const visitCount = parseInt(localStorage.getItem('visitCount') || '0');
-    const newVisitCount = visitCount + 1;
-    localStorage.setItem('visitCount', newVisitCount);
-    setUserVisits(newVisitCount);
-
-    // Simulate total visits across all users (backend alternative)
-    const totalSiteVisits = parseInt(localStorage.getItem('totalVisits') || '0') + 1;
-    localStorage.setItem('totalVisits', totalSiteVisits);
-    setTotalVisits(totalSiteVisits);
-  }, []);
-
   return (
     <div>
       <section
@@ -79,24 +63,14 @@ const Hero = () => {
               See My Work
             </a>
             <a
-              href="#contact"
+              href="mailto:kapil19092003@gmail.com"
               className="border-2 border-teal-500 px-6 py-3 rounded-md text-lg font-semibold hover:bg-teal-500 hover:text-white transition"
             >
               Hire Me
             </a>
           </div>
-
-          <div className="mt-8">
-            <h2 className="text-lg">Welcome to the site!</h2>
-            <p>You have visited this site <b>{userVisits}</b> times.</p>
-          </div>
         </div>
       </section>
-
-      {/* Footer Section */}
-      <footer className="bg-gray-900 text-center py-4 text-white">
-        <p>Total site visits: <b>{totalVisits}</b></p>
-      </footer>
     </div>
   );
 };

@@ -2,14 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 
 const projects = [
   {
-    title: 'React Router Implementation',
-    description: 'Implementation of React Router for dynamic routing.',
-    link: 'https://github.com/Kapil690789/React-Router'
+    title: 'React Project',
+    description: 'Here is all react 10 project basic to hard',
+    link: 'https://github.com/Kapil690789/Kapil-aur-react'
   },
   {
-    title: 'To-Do List Application',
-    description: 'Interactive to-do list using React for task management.',
-    link: 'https://todolist-gamma-flax.vercel.app/'
+    title: 'Prescripto',
+    description: 'Doctor Appointment System based on MERN Stack Project and also admin/doctor link  ',
+     link: 'https://prescripto-frontend-616t.onrender.com',
+     link: 'https://prescripto-admin-veng.onrender.com/add-doctor'
   },
   {
     title: 'Simon Game',
@@ -17,8 +18,9 @@ const projects = [
     link: 'https://github.com/Kapil690789/Simon-Game'
   },
   {
-    title: 'Hotstar Clone',
-    description: 'Clone of the Hotstar website using HTML, CSS, and JavaScript.'
+    title: 'To-Do List Application',
+    description: 'Interactive to-do list using React for task management.',
+    link: 'https://todolist-gamma-flax.vercel.app/'
   },
   {
     title: 'Chess Game',

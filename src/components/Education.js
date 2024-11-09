@@ -41,7 +41,7 @@ const Education = () => {
               RPS Public School, Narnaul
             </h3>
             <p className="text-teal-400">2021</p>
-            <p className="text-gray-300">Percentage: 94.60%</p>
+            <p className="text-gray-300">12th Percentage: 94.60%</p>
           </div>
         </div>
       </div>
