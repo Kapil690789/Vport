@@ -19,9 +19,7 @@ const Contact = () => {
     <section
       id="contact"
       className="relative py-20 bg-cover bg-center"
-      style={{
-        backgroundImage: `url('https://e0.pxfuel.com/wallpapers/265/130/desktop-wallpaper-statistics.jpg')`,
-      }}
+      
     >
       {/* Overlay for readability */}
       <div className="absolute inset-0 bg-black bg-opacity-60"></div>

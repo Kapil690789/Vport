@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaLinkedin, FaGithub, FaEnvelope, FaCode } from 'react-icons/fa';
+import { FaLinkedin, FaGithub, FaEnvelope } from 'react-icons/fa';
 
 const leetcodeLogo = 'https://upload.wikimedia.org/wikipedia/commons/1/19/LeetCode_logo_black.png';
 
@@ -58,7 +58,7 @@ const Hero = () => {
           <div className="flex space-x-4">
             <a
               href="#projects"
-              className="bg-teal-500 px-6 py-3 rounded-md text-lg font-semibold hover:bg-teal-400 transition"
+              className="border-2 border-teal-500 px-6 py-3 rounded-md text-lg font-semibold hover:bg-teal-500 hover:text-white transition"
             >
               See My Work
             </a>
@@ -67,6 +67,14 @@ const Hero = () => {
               className="border-2 border-teal-500 px-6 py-3 rounded-md text-lg font-semibold hover:bg-teal-500 hover:text-white transition"
             >
               Hire Me
+            </a>
+            <a
+              href="https://drive.google.com/file/d/1LRcw3j0f3czPS7hOmP3gZQDNjeRJ1A2P/view?usp=sharing" // Replace with your resume link
+              target="_blank"
+              rel="noopener noreferrer"
+              className="border-2 border-teal-500 px-6 py-3 rounded-md text-lg font-semibold hover:bg-teal-500 hover:text-white transition"
+            >
+               Resume
             </a>
           </div>
         </div>

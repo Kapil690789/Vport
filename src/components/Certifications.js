@@ -28,9 +28,7 @@ const Certifications = () => {
       className={`relative py-20 bg-cover bg-center transition-all duration-1000 ease-out ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}
-      style={{
-        backgroundImage: `url('https://e0.pxfuel.com/wallpapers/653/339/desktop-wallpaper-child-of-eden-concept-art-your-new.jpg')`,
-      }}
+    
     >
       {/* Overlay to improve text readability */}
       <div className="absolute inset-0 bg-black bg-opacity-60"></div>

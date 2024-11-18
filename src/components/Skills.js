@@ -48,9 +48,6 @@ const Skills = () => {
       className={`relative py-20 bg-cover bg-center transition-all duration-1000 ease-out ${
         isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-90'
       }`}
-      style={{
-        backgroundImage: `url('https://e1.pxfuel.com/desktop-wallpaper/489/946/desktop-wallpaper-aerial-view-of-abstract-futuristic-binary-city-a-high-high-tech-city.jpg')`,
-      }}
     >
       {/* Overlay for better text contrast */}
       <div className="absolute inset-0 bg-black bg-opacity-60"></div>

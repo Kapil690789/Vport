@@ -5,9 +5,7 @@ const Education = () => {
     <section
       id="education"
       className="relative py-20 bg-cover bg-center"
-      style={{
-        backgroundImage: `url('https://e1.pxfuel.com/desktop-wallpaper/242/198/desktop-wallpaper-cyber-world-cyber.jpg')`,
-      }}
+  
     >
       {/* Overlay for better contrast */}
       <div className="absolute inset-0 bg-black bg-opacity-60"></div>
