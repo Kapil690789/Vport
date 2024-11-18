@@ -41,7 +41,7 @@ const projects = [
   {
     title: 'Chess Game',
     description: 'Chess game with Node.js backend and EJS for templating.',
-    link: 'https://github.com/Kapil690789/Chess-game',
+    link: 'https://chess-game-vguz.onrender.com',
     image: assests.chessgame
   }
 ];
