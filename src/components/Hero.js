@@ -69,7 +69,7 @@ const Hero = () => {
               Hire Me
             </a>
             <a
-              href="https://drive.google.com/file/d/1LRcw3j0f3czPS7hOmP3gZQDNjeRJ1A2P/view?usp=sharing" // Replace with your resume link
+              href="https://drive.google.com/file/d/1sSYVmusRM3BkX2SGuyUso4Bq5ifZLsq8/view?usp=sharing" // Replace with your resume link
               target="_blank"
               rel="noopener noreferrer"
               className="border-2 border-teal-500 px-6 py-3 rounded-md text-lg font-semibold hover:bg-teal-500 hover:text-white transition"
