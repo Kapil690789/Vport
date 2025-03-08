@@ -5,6 +5,8 @@ import chessgame from "./chessgame.png"
 import simongame from "./simongame.png"
 import todolist from "./todolist.png"
 import Eshop from "./Eshop.png"
+import iconnect from "./ic.png"
+import chat from "./chat.png"
 export const assests = {
     reactproject,
     precripto,
@@ -12,6 +14,8 @@ export const assests = {
     chessgame,
     simongame,
     todolist,
-    Eshop
+    Eshop,
+    iconnect,
+    chat
 
 }
