@@ -98,6 +98,7 @@ const Projects = () => {
   }, [isVisible]);
 
   return (
+    
     <section id="projects" ref={sectionRef} className="py-20 bg-gradient-to-b from-gray-900 to-gray-800 relative">
       {/* Background elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden">

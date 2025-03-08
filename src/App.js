@@ -6,6 +6,7 @@ import WorkExperience from "./components/WorkExperience"
 import Education from "./components/Education"
 import Certifications from "./components/Certifications"
 import Footer from "./components/Footer"
+import Contact from "./components/Contact"
 import "./index.css"
 
 function App() {
@@ -18,7 +19,9 @@ function App() {
       <WorkExperience />
       <Education />
       <Certifications />
+      <Contact/>
       <Footer />
+     
     </div>
   )
 }
