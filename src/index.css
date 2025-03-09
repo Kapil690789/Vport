@@ -66,3 +66,23 @@ body {
   background-image: radial-gradient(var(--tw-gradient-stops));
 }
 
+
+/* global.css */
+.role-fade-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.role-fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.role-fade-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+.role-fade-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
