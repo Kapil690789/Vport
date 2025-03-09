@@ -4,10 +4,11 @@ import { useState, useEffect, useRef } from "react";
 import { FaLinkedin, FaGithub, FaEnvelope } from "react-icons/fa";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Text, Float } from "@react-three/drei";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Text, Float, OrbitControls, Cloud, Stars, useTexture } from "@react-three/drei";
+import * as THREE from "three";
 
-// Custom InView component to handle intersection observing
+// Custom InView component
 const InViewWrapper = ({ children, threshold = 0.1, triggerOnce = true }) => {
   const ref = useRef(null);
   const [inView, setInView] = useState(false);
@@ -26,9 +27,11 @@ const InViewWrapper = ({ children, threshold = 0.1, triggerOnce = true }) => {
       },
       { threshold }
     );
+    
     if (ref.current) {
       observer.observe(ref.current);
     }
+    
     return () => {
       if (ref.current) {
         observer.unobserve(ref.current);
@@ -39,76 +42,227 @@ const InViewWrapper = ({ children, threshold = 0.1, triggerOnce = true }) => {
   return children({ inView, ref });
 };
 
-// 3D Floating Particles that follow cursor
-const FloatingParticles = ({ mousePosition }) => {
-  const particlesRef = useRef(null);
+// Enhanced particle system with more dynamic behavior
+const EnhancedParticles = ({ mousePosition }) => {
+  const groupRef = useRef();
+  const particlesRef = useRef([]);
+  const particleCount = 40;
+  const { size, viewport } = useThree();
+  const aspect = size.width / viewport.width;
 
-  useFrame(() => {
-    if (particlesRef.current) {
-      particlesRef.current.position.x += (mousePosition.x * 5 - particlesRef.current.position.x) * 0.05;
-      particlesRef.current.position.y += (mousePosition.y * 5 - particlesRef.current.position.y) * 0.05;
-      particlesRef.current.rotation.x += 0.001;
-      particlesRef.current.rotation.y += 0.002;
+  // Initialize particles with random positions and properties
+  useEffect(() => {
+    particlesRef.current = Array(particleCount).fill().map(() => ({
+      position: new THREE.Vector3(
+        (Math.random() - 0.5) * 15,
+        (Math.random() - 0.5) * 15,
+        (Math.random() - 0.5) * 15
+      ),
+      scale: 0.1 + Math.random() * 0.3,
+      speed: 0.01 + Math.random() * 0.02,
+      rotationSpeed: 0.001 + Math.random() * 0.002,
+      colorIndex: Math.floor(Math.random() * 3),
+      originalPosition: new THREE.Vector3(
+        (Math.random() - 0.5) * 15,
+        (Math.random() - 0.5) * 15,
+        (Math.random() - 0.5) * 15
+      ),
+    }));
+  }, [particleCount]);
+
+  // Animation frame updates
+  useFrame((state, delta) => {
+    if (groupRef.current) {
+      // Global group movement following mouse
+      groupRef.current.rotation.y += 0.001;
+      groupRef.current.rotation.x += 0.0005;
+      groupRef.current.position.x += (mousePosition.x * 3 - groupRef.current.position.x) * 0.03;
+      groupRef.current.position.y += (mousePosition.y * 3 - groupRef.current.position.y) * 0.03;
+      
+      // Update individual particles
+      particlesRef.current.forEach((particle, i) => {
+        if (!groupRef.current.children[i]) return;
+        
+        // Apply sine wave movement for a floating effect
+        const now = state.clock.elapsedTime;
+        const mesh = groupRef.current.children[i];
+        
+        // Dynamic position adjustments based on mouse
+        const mouseInfluence = 0.5 + Math.sin(now * 0.5) * 0.3;
+        const targetX = particle.originalPosition.x + mousePosition.x * 2 * mouseInfluence;
+        const targetY = particle.originalPosition.y + mousePosition.y * 2 * mouseInfluence;
+        const targetZ = particle.originalPosition.z + Math.sin(now * 0.3) * 0.5;
+        
+        // Smooth interpolation
+        mesh.position.x += (targetX - mesh.position.x) * 0.02 * delta * 60;
+        mesh.position.y += (targetY - mesh.position.y) * 0.02 * delta * 60;
+        mesh.position.z += (targetZ - mesh.position.z) * 0.02 * delta * 60;
+
+        // Rotation
+        mesh.rotation.x += particle.rotationSpeed * delta * 60;
+        mesh.rotation.y += particle.rotationSpeed * 1.3 * delta * 60;
+        mesh.rotation.z += particle.rotationSpeed * 0.7 * delta * 60;
+        
+        // Pulse scale effect
+        const scalePulse = 1 + Math.sin(now * particle.speed * 5) * 0.1;
+        mesh.scale.set(
+          particle.scale * scalePulse,
+          particle.scale * scalePulse,
+          particle.scale * scalePulse
+        );
+      });
     }
   });
 
   return (
-    <group ref={particlesRef}>
-      {Array.from({ length: 20 }).map((_, i) => (
-        <Float key={i} speed={i % 2 === 0 ? 2 : 4} rotationIntensity={0.5} floatIntensity={i % 3 === 0 ? 1 : 2}>
-          <mesh position={[(Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10]}>
-            <sphereGeometry args={[0.1 + Math.random() * 0.2, 8, 8]} />
+    <group ref={groupRef}>
+      {Array.from({ length: particleCount }).map((_, i) => {
+        // Assign one of three colors based on index
+        const colors = ["#2DD4BF", "#0EA5E9", "#8B5CF6"];
+        const colorIndex = i % 3;
+        
+        return (
+          <mesh key={i} position={[
+            (Math.random() - 0.5) * 15,
+            (Math.random() - 0.5) * 15,
+            (Math.random() - 0.5) * 15
+          ]}>
+            {i % 5 === 0 ? (
+              <octahedronGeometry args={[0.2 + Math.random() * 0.3, 0]} />
+            ) : i % 3 === 0 ? (
+              <tetrahedronGeometry args={[0.2 + Math.random() * 0.3, 0]} />
+            ) : (
+              <sphereGeometry args={[0.1 + Math.random() * 0.2, 8, 8]} />
+            )}
             <meshStandardMaterial
-              color={i % 3 === 0 ? "#2DD4BF" : i % 3 === 1 ? "#0EA5E9" : "#8B5CF6"}
+              color={colors[colorIndex]}
               transparent
-              opacity={0.6}
-              emissive={i % 3 === 0 ? "#2DD4BF" : i % 3 === 1 ? "#0EA5E9" : "#8B5CF6"}
-              emissiveIntensity={0.4}
+              opacity={0.7 + Math.random() * 0.3}
+              emissive={colors[colorIndex]}
+              emissiveIntensity={0.5 + Math.random() * 0.5}
+              roughness={0.2}
+              metalness={0.8}
             />
           </mesh>
-        </Float>
-      ))}
+        );
+      })}
     </group>
   );
 };
 
-// 3D Text that follows cursor
-const FloatingText = ({ mousePosition }) => {
-  const textRef = useRef(null);
+// Enhanced 3D text with better animations
+const EnhancedFloatingText = ({ mousePosition }) => {
+  const textRef = useRef();
+  const { viewport } = useThree();
+  const isMobile = viewport.width < 5;
 
-  useFrame(() => {
+  useFrame((state) => {
     if (textRef.current) {
-      textRef.current.rotation.x = mousePosition.y * 0.1;
-      textRef.current.rotation.y = mousePosition.x * 0.1;
+      // Smooth follow with dampening
+      textRef.current.rotation.x = THREE.MathUtils.lerp(
+        textRef.current.rotation.x,
+        mousePosition.y * 0.2, 
+        0.05
+      );
+      textRef.current.rotation.y = THREE.MathUtils.lerp(
+        textRef.current.rotation.y,
+        mousePosition.x * 0.2,
+        0.05
+      );
+      
+      // Add subtle floating motion
+      textRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.1;
+      
+      // Pulse scale effect
+      const scale = 1 + Math.sin(state.clock.elapsedTime) * 0.03;
+      textRef.current.scale.set(scale, scale, scale);
     }
   });
 
   return (
-    <group ref={textRef} position={[0, 0, -2]}>
-      <Text fontSize={0.8} color="#2DD4BF" anchorX="center" anchorY="middle">
+    <group ref={textRef} position={[0, 0, -1]}>
+      <Text
+        fontSize={isMobile ? 0.6 : 0.8}
+        maxWidth={viewport.width / 2}
+        lineHeight={1.2}
+        font="/fonts/Inter-Bold.woff" // You'll need to provide this font or use a default one
+        color="#2DD4BF"
+        anchorX="center"
+        anchorY="middle"
+        material-toneMapped={false}
+        material-depthWrite={false}
+        letterSpacing={0.05}
+        strokeWidth={0.01}
+        strokeColor="#0EA5E9"
+        outlineWidth={0.005}
+        outlineColor="#8B5CF6"
+      >
         KAPIL SHARMA
       </Text>
     </group>
   );
 };
 
-// Interactive 3D Object Component
-const InteractiveObject = ({ position, data, mousePosition, onHover }) => {
+// Enhanced interactive objects with better hover effects
+const EnhancedInteractiveObject = ({ position, data, mousePosition, onHover, shape = "box" }) => {
   const meshRef = useRef();
   const [isHovered, setIsHovered] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
+  const originalPosition = useRef(position);
+  const { clock } = useThree();
 
-  useFrame(() => {
+  useFrame((state, delta) => {
     if (meshRef.current) {
-      // Gentle movement toward cursor with offset
-      const targetX = position[0] + mousePosition.x * 2;
-      const targetY = position[1] + mousePosition.y * 2;
-      meshRef.current.position.x += (targetX - meshRef.current.position.x) * 0.05;
-      meshRef.current.position.y += (targetY - meshRef.current.position.y) * 0.05;
-      // Idle animation
-      meshRef.current.rotation.y += 0.01;
-      meshRef.current.position.z = position[2] + Math.sin(Date.now() * 0.001) * 0.1;
+      const time = state.clock.getElapsedTime();
+      
+      // Base hover animation
+      const hoverScale = isHovered ? 1.2 : 1;
+      meshRef.current.scale.lerp(new THREE.Vector3(hoverScale, hoverScale, hoverScale), 0.1);
+      
+      // Dynamic effects based on interaction state
+      if (isHovered) {
+        // Rotation animation when hovered
+        meshRef.current.rotation.y += 0.02 * delta * 60;
+        meshRef.current.rotation.x += 0.01 * delta * 60;
+        
+        // Emissive intensity pulse
+        meshRef.current.material.emissiveIntensity = 0.8 + Math.sin(time * 5) * 0.2;
+      } else {
+        // Slower rotation when not hovered
+        meshRef.current.rotation.y += 0.005 * delta * 60;
+        
+        // Gentle movement animation
+        const floatX = Math.sin(time * 0.5 + position[0]) * 0.1;
+        const floatY = Math.cos(time * 0.5 + position[1]) * 0.1;
+        
+        // Smooth movement toward cursor with spring physics
+        const targetX = originalPosition.current[0] + mousePosition.x * 1.5 + floatX;
+        const targetY = originalPosition.current[1] + mousePosition.y * 1.5 + floatY;
+        const targetZ = originalPosition.current[2] + Math.sin(time * 0.3) * 0.2;
+        
+        meshRef.current.position.x += (targetX - meshRef.current.position.x) * 0.05 * delta * 60;
+        meshRef.current.position.y += (targetY - meshRef.current.position.y) * 0.05 * delta * 60;
+        meshRef.current.position.z += (targetZ - meshRef.current.position.z) * 0.05 * delta * 60;
+        
+        // Reset emissive intensity
+        meshRef.current.material.emissiveIntensity = 0.5;
+      }
     }
   });
+
+  // Determine which geometry to use based on shape prop
+  const Geometry = () => {
+    switch (shape) {
+      case "sphere":
+        return <sphereGeometry args={[0.7, 32, 32]} />;
+      case "tetrahedron":
+        return <tetrahedronGeometry args={[0.8, 0]} />;
+      case "octahedron":
+        return <octahedronGeometry args={[0.7, 0]} />;
+      default:
+        return <boxGeometry args={[0.8, 0.8, 0.8]} />;
+    }
+  };
 
   return (
     <mesh
@@ -124,50 +278,162 @@ const InteractiveObject = ({ position, data, mousePosition, onHover }) => {
         setIsHovered(false);
         onHover(null);
       }}
+      onClick={() => setIsClicked(!isClicked)}
     >
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={isHovered ? "#FF6B6B" : "#2DD4BF"} emissive={isHovered ? "#FF6B6B" : "#2DD4BF"} emissiveIntensity={0.5} />
+      <Geometry />
+      <meshPhysicalMaterial
+        color={isHovered ? "#FF6B6B" : "#2DD4BF"}
+        emissive={isHovered ? "#FF6B6B" : "#2DD4BF"}
+        emissiveIntensity={0.5}
+        roughness={0.3}
+        metalness={0.8}
+        clearcoat={1.0}
+        clearcoatRoughness={0.2}
+        transmission={0.2}
+        thickness={1}
+        transparent
+        opacity={0.9}
+      />
     </mesh>
   );
 };
 
-// 3D Scene Component
+// Background stars and atmosphere effects
+const BackgroundEffects = () => {
+  const starsRef = useRef();
+  
+  useFrame((state) => {
+    if (starsRef.current) {
+      starsRef.current.rotation.y += 0.0001;
+      starsRef.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.05) * 0.01;
+    }
+  });
+
+  return (
+    <group>
+      <Stars 
+        ref={starsRef}
+        radius={100} 
+        depth={50} 
+        count={5000} 
+        factor={4} 
+        saturation={0.5}
+        fade
+        speed={0.5}
+      />
+      
+      {/* Add atmospheric clouds in the distance */}
+      <group position={[0, 0, -20]}>
+        <Cloud 
+          opacity={0.2}
+          speed={0.1}
+          width={30}
+          depth={5}
+          segments={20}
+          color="#2DD4BF"
+        />
+      </group>
+    </group>
+  );
+};
+
+// Main 3D Scene Component
 const Scene = ({ mousePosition, setHoveredObject }) => {
   return (
     <>
-      <ambientLight intensity={0.5} />
-      <pointLight position={[10, 10, 10]} intensity={1} />
-      <directionalLight position={[5, 5, 5]} intensity={0.5} />
-      <FloatingParticles mousePosition={mousePosition} />
-      <FloatingText mousePosition={mousePosition} />
-      {/* Interactive 3D Objects */}
-      <InteractiveObject
-        position={[2, 1, 0]}
+      <ambientLight intensity={0.4} />
+      <pointLight position={[10, 10, 10]} intensity={0.8} color="#ffffff" />
+      <pointLight position={[-10, -10, -5]} intensity={0.5} color="#0EA5E9" />
+      <spotLight position={[5, 5, 5]} intensity={0.6} angle={0.2} penumbra={1} castShadow />
+      
+      <BackgroundEffects />
+      <EnhancedParticles mousePosition={mousePosition} />
+      <EnhancedFloatingText mousePosition={mousePosition} />
+      
+      {/* Interactive 3D Objects with different shapes */}
+      <EnhancedInteractiveObject
+        position={[2.5, 1.2, 0]}
         data={{ name: "React", description: "A JavaScript library for building user interfaces" }}
         mousePosition={mousePosition}
         onHover={setHoveredObject}
+        shape="box"
       />
-      <InteractiveObject
-        position={[-2, 1, 0]}
+      <EnhancedInteractiveObject
+        position={[-2.5, 1.2, 0]}
         data={{ name: "Node.js", description: "A JavaScript runtime for server-side development" }}
         mousePosition={mousePosition}
         onHover={setHoveredObject}
+        shape="sphere"
       />
-      <InteractiveObject
-        position={[0, -1, 0]}
+      <EnhancedInteractiveObject
+        position={[0, -1.5, 0]}
         data={{ name: "Three.js", description: "A library for 3D graphics on the web" }}
         mousePosition={mousePosition}
         onHover={setHoveredObject}
+        shape="octahedron"
       />
-      {/* Removed Environment component that was causing issues */}
+      <EnhancedInteractiveObject
+        position={[-1.8, -0.5, 1]}
+        data={{ name: "TypeScript", description: "A strongly typed programming language that builds on JavaScript" }}
+        mousePosition={mousePosition}
+        onHover={setHoveredObject}
+        shape="tetrahedron"
+      />
+      <EnhancedInteractiveObject
+        position={[1.8, -0.5, 1]}
+        data={{ name: "Framer Motion", description: "A production-ready motion library for React" }}
+        mousePosition={mousePosition}
+        onHover={setHoveredObject}
+        shape="box"
+      />
     </>
+  );
+};
+
+// High-quality bloom effect for hero text
+const HeroText = ({ name, roles, currentRole, setHoveredWord, hoveredWord }) => {
+  // Split text for animations
+  const nameWords = name.split(" ");
+
+  return (
+    <div className="mb-8">
+      <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 relative">
+        {nameWords.map((word, index) => (
+          <motion.span
+            key={index}
+            className={`inline-block mx-1 text-glow ${
+              hoveredWord === index ? "text-teal-400 transform scale-110" : hoveredWord !== null ? "opacity-70" : ""
+            }`}
+            whileHover={{ scale: 1.1, color: "#2DD4BF", transition: { duration: 0.2 } }}
+            onHoverStart={() => setHoveredWord(index)}
+            onHoverEnd={() => setHoveredWord(null)}
+          >
+            {word}
+          </motion.span>
+        ))}
+      </h1>
+      <div className="h-8 md:h-10">
+        <TransitionGroup component={null}>
+          <CSSTransition key={currentRole} timeout={500} classNames="role-transition">
+            <motion.p
+              className="text-xl md:text-2xl font-medium text-teal-300 role-text-glow"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              {roles[currentRole]}
+            </motion.p>
+          </CSSTransition>
+        </TransitionGroup>
+      </div>
+    </div>
   );
 };
 
 const leetcodeLogo = "https://upload.wikimedia.org/wikipedia/commons/1/19/LeetCode_logo_black.png";
 
 const Hero = () => {
-  const roles = ["Full Stack Developer", "Software Engineer", "Problem Solver"];
+  const roles = ["Full Stack Developer", "Software Engineer", "Problem Solver", "Code Enthusiast"];
   const [currentRole, setCurrentRole] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -175,6 +441,7 @@ const Hero = () => {
   const [hoveredWord, setHoveredWord] = useState(null);
   const [hoveredObject, setHoveredObject] = useState(null);
   const heroRef = useRef(null);
+  const canvasRef = useRef(null);
   const backgroundRef = useRef(null);
 
   // Parallax elements refs
@@ -188,19 +455,24 @@ const Hero = () => {
   const { scrollY } = useScroll();
   const backgroundY = useTransform(scrollY, [0, 1000], ["0%", "50%"]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0.3]);
+  const parallaxY1 = useTransform(scrollY, [0, 500], [0, -100]);
+  const parallaxY2 = useTransform(scrollY, [0, 500], [0, -50]);
+  const parallaxY3 = useTransform(scrollY, [0, 500], [0, -25]);
 
   // Spring animation for smooth mouse movement
   const mouseX = useSpring(0, { stiffness: 100, damping: 30 });
   const mouseY = useSpring(0, { stiffness: 100, damping: 30 });
 
+  // Role cycling effect
   useEffect(() => {
     setIsVisible(true);
     const interval = setInterval(() => {
       setCurrentRole((prev) => (prev + 1) % roles.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [roles.length]);
 
+  // Mouse movement and scroll handling
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (!heroRef.current) return;
@@ -216,21 +488,19 @@ const Hero = () => {
     const handleScroll = () => {
       if (backgroundRef.current) {
         const scrolled = window.scrollY;
-        backgroundRef.current.style.transform = `translate3d(0, ${scrolled * 0.5}px, 0)`;
+        backgroundRef.current.style.transform = `translate3d(0, ${scrolled * 0.2}px, 0)`;
+        if (canvasRef.current) {
+          canvasRef.current.style.transform = `translate3d(0, ${scrolled * 0.05}px, 0)`;
+        }
       }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    const heroElement = heroRef.current;
-    if (heroElement) {
-      heroElement.addEventListener("mousemove", handleMouseMove);
-    }
+    document.addEventListener("mousemove", handleMouseMove);
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      if (heroElement) {
-        heroElement.removeEventListener("mousemove", handleMouseMove);
-      }
+      document.removeEventListener("mousemove", handleMouseMove);
     };
   }, [mouseX, mouseY]);
 
@@ -246,10 +516,8 @@ const Hero = () => {
 
   // Split text for animations
   const nameText = "Hi, I'm Kapil Sharma";
-  const nameWords = nameText.split(" ");
-
   const descriptionText =
-    "A passionate Software Engineer focused on crafting elegant solutions through coding, problem-solving, and web development.";
+    "A passionate Software Engineer focused on crafting elegant solutions through coding, problem-solving, and innovative web development.";
   const descriptionWords = descriptionText.split(" ");
 
   return (
@@ -262,8 +530,24 @@ const Hero = () => {
       transition={{ duration: 0.8 }}
     >
       {/* 3D Canvas Background */}
-      <div className="absolute inset-0 z-0">
-        <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
+      <div className="absolute inset-0 z-0" ref={canvasRef}>
+        <Canvas 
+          camera={{ position: [0, 0, 5], fov: 75 }}
+          dpr={[1, 2]} // Performance optimization
+          gl={{ 
+            antialias: true,
+            alpha: true,
+            powerPreference: "high-performance"
+          }}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            zIndex: 0
+          }}
+        >
           <Scene mousePosition={mousePosition} setHoveredObject={setHoveredObject} />
         </Canvas>
       </div>
@@ -277,13 +561,13 @@ const Hero = () => {
           backgroundSize: "cover",
           backgroundPosition: "center",
           y: backgroundY,
-          opacity,
+          opacity: 0.4, // Lower opacity for better ThreeJS visibility
           willChange: "transform",
         }}
       />
 
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70 z-1"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-black/80 z-1"></div>
 
       {/* Animated Particles */}
       <motion.div
@@ -310,42 +594,25 @@ const Hero = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             {/* Name and Role */}
-            <motion.div ref={headingRef} className="mb-8" variants={textVariants} initial="hidden" animate="visible">
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 relative">
-                {nameWords.map((word, index) => (
-                  <motion.span
-                    key={index}
-                    className={`inline-block mx-1 ${
-                      hoveredWord === index ? "text-teal-400 transform scale-110" : hoveredWord !== null ? "opacity-70" : ""
-                    }`}
-                    whileHover={{ scale: 1.1, color: "#2DD4BF", transition: { duration: 0.2 } }}
-                    onHoverStart={() => setHoveredWord(index)}
-                    onHoverEnd={() => setHoveredWord(null)}
-                  >
-                    {word}
-                  </motion.span>
-                ))}
-              </h1>
-              <div className="h-8 md:h-10">
-                <TransitionGroup component={null}>
-                  <CSSTransition key={currentRole} timeout={500} classNames="role-transition">
-                    <motion.p
-                      className="text-xl md:text-2xl font-medium text-teal-300"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                    >
-                      {roles[currentRole]}
-                    </motion.p>
-                  </CSSTransition>
-                </TransitionGroup>
-              </div>
+            <motion.div 
+              ref={headingRef} 
+              style={{ y: parallaxY1 }}
+              className="pointer-events-auto"
+            >
+              <HeroText 
+                name={nameText}
+                roles={roles}
+                currentRole={currentRole}
+                setHoveredWord={setHoveredWord}
+                hoveredWord={hoveredWord}
+              />
             </motion.div>
 
             {/* Description */}
             <motion.div
               ref={descriptionRef}
               className="mb-10"
+              style={{ y: parallaxY2 }}
               variants={textVariants}
               initial="hidden"
               animate="visible"
@@ -368,6 +635,7 @@ const Hero = () => {
             <motion.div
               ref={socialRef}
               className="flex justify-center space-x-8 mb-10"
+              style={{ y: parallaxY3 }}
               variants={textVariants}
               initial="hidden"
               animate="visible"
@@ -381,7 +649,9 @@ const Hero = () => {
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <FaLinkedin size={32} />
+                <div className="social-icon-container">
+                  <FaLinkedin size={32} />
+                </div>
                 <motion.span
                   className="absolute -bottom-2 left-1/2 h-0.5 bg-teal-500"
                   initial={{ width: 0, x: "-50%" }}
@@ -397,7 +667,9 @@ const Hero = () => {
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <FaGithub size={32} />
+                <div className="social-icon-container">
+                  <FaGithub size={32} />
+                </div>
                 <motion.span
                   className="absolute -bottom-2 left-1/2 h-0.5 bg-teal-500"
                   initial={{ width: 0, x: "-50%" }}
@@ -409,7 +681,7 @@ const Hero = () => {
                 href="https://leetcode.com/u/kapil1909/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-white rounded-full p-1.5 relative group"
+                className="bg-white rounded-full p-1.5 relative group social-icon-container-light"
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -427,7 +699,9 @@ const Hero = () => {
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <FaEnvelope size={32} />
+                <div className="social-icon-container">
+                  <FaEnvelope size={32} />
+                </div>
                 <motion.span
                   className="absolute -bottom-2 left-1/2 h-0.5 bg-teal-500"
                   initial={{ width: 0, x: "-50%" }}
@@ -448,7 +722,7 @@ const Hero = () => {
             >
               <motion.a
                 href="#projects"
-                className="relative px-6 md:px-8 py-3 md:py-4 rounded-lg text-base md:text-lg font-semibold bg-teal-500 text-white overflow-hidden group"
+                className="relative px-6 md:px-8 py-3 md:py-4 rounded-lg text-base md:text-lg font-semibold bg-teal-500 text-white overflow-hidden group neon-button"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -604,6 +878,37 @@ const Hero = () => {
           transition: opacity 500ms, transform 500ms;
         }
       `}</style>
+      <style jsx>{`
+  .neon-button {
+    box-shadow: 0 0 10px rgba(45, 212, 191, 0.5);
+    transition: box-shadow 0.3s ease;
+  }
+  .neon-button:hover {
+    box-shadow: 0 0 20px rgba(45, 212, 191, 0.8), 0 0 30px rgba(45, 212, 191, 0.6);
+  }
+  .border-button {
+    border-image: linear-gradient(45deg, #2DD4BF, #0EA5E9) 1;
+  }
+  .resume-button {
+    border-image: linear-gradient(45deg, #ffffff, #94a3b8) 1;
+  }
+  .social-icon-container {
+    transition: transform 0.3s ease;
+  }
+  .social-icon-container:hover {
+    transform: translateY(-3px);
+  }
+  .social-icon-container-light {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+  }
+  .text-glow {
+    text-shadow: 0 0 10px rgba(45, 212, 191, 0.5);
+  }
+  .role-text-glow {
+    text-shadow: 0 0 15px rgba(45, 212, 191, 0.7);
+  }
+`}</style>
     </motion.section>
   );
 };

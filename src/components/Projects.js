@@ -1,11 +1,8 @@
-
 import { assests } from '../assests/assets'; // Adjust path as needed
-
 import React, { useEffect, useRef, useState } from 'react';
+import * as THREE from 'three';
 
 // Placeholder for assets
-
-
 const projects = [
   { title: 'Prescripto', description: 'Doctor Appointment System using MERN Stack.', link: 'https://prescripto-frontend-616t.onrender.com', image: assests.precripto },
   { title: 'IconnectGJUS&T', description: 'Full-stack project hosted on cPanel with PHP, MySQL, and JavaScript.', link: 'https://iconnectgjust.live', image: assests.iconnect },
@@ -21,7 +18,143 @@ const Projects = () => {
   const [activeProject, setActiveProject] = useState(null);
   const sectionRef = useRef(null);
   const projectRefs = useRef([]);
+  const canvasRef = useRef(null);
+  const threeContainerRef = useRef(null);
 
+  // Three.js animation setup
+  useEffect(() => {
+    if (!threeContainerRef.current) return;
+
+    // Scene setup
+    const scene = new THREE.Scene();
+    
+    // Camera setup
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      threeContainerRef.current.clientWidth / threeContainerRef.current.clientHeight,
+      0.1,
+      1000
+    );
+    camera.position.z = 30;
+    
+    // Renderer setup
+    const renderer = new THREE.WebGLRenderer({ 
+      canvas: canvasRef.current,
+      alpha: true,
+      antialias: true
+    });
+    renderer.setSize(threeContainerRef.current.clientWidth, threeContainerRef.current.clientHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    
+    // Create particles
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particlesCount = 1500;
+    
+    const posArray = new Float32Array(particlesCount * 3);
+    const colorArray = new Float32Array(particlesCount * 3);
+    
+    // Colors for gradient effect
+    const color1 = new THREE.Color(0x06b6d4); // teal-500
+    const color2 = new THREE.Color(0x06b6d4); // purple-500
+    
+    for (let i = 0; i < particlesCount * 3; i += 3) {
+      // Position
+      posArray[i] = (Math.random() - 0.5) * 100;
+      posArray[i + 1] = (Math.random() - 0.5) * 100;
+      posArray[i + 2] = (Math.random() - 0.5) * 50;
+      
+      // Color - gradient between teal and purple
+      const ratio = Math.random();
+      const mixedColor = new THREE.Color().lerpColors(color1, color2, ratio);
+      
+      colorArray[i] = mixedColor.r;
+      colorArray[i + 1] = mixedColor.g;
+      colorArray[i + 2] = mixedColor.b;
+    }
+    
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+    
+    // Material
+    const particlesMaterial = new THREE.PointsMaterial({
+      size: 0.15,
+      transparent: true,
+      opacity: 0.7,
+      vertexColors: true,
+      blending: THREE.AdditiveBlending,
+      sizeAttenuation: true,
+    });
+    
+    // Points mesh
+    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particlesMesh);
+    
+    // Add some light sources for better visibility
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+    
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(0, 10, 5);
+    scene.add(directionalLight);
+    
+    // Mouse interaction
+    const mouse = {
+      x: 0,
+      y: 0
+    };
+    
+    const handleMouseMove = (event) => {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    
+    // Animation
+    const animate = () => {
+      requestAnimationFrame(animate);
+      
+      // Rotate particles
+      particlesMesh.rotation.x += 0.0005;
+      particlesMesh.rotation.y += 0.0008;
+      
+      // Respond to mouse movement
+      particlesMesh.rotation.x += mouse.y * 0.0005;
+      particlesMesh.rotation.y += mouse.x * 0.0005;
+      
+      // Move particles slightly
+      const positions = particlesMesh.geometry.attributes.position.array;
+      
+      for (let i = 0; i < positions.length; i += 3) {
+        positions[i + 1] += Math.sin(Date.now() * 0.001 + positions[i]) * 0.003;
+      }
+      
+      particlesMesh.geometry.attributes.position.needsUpdate = true;
+      
+      renderer.render(scene, camera);
+    };
+    
+    animate();
+    
+    // Handle resize
+    const handleResize = () => {
+      camera.aspect = threeContainerRef.current.clientWidth / threeContainerRef.current.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(threeContainerRef.current.clientWidth, threeContainerRef.current.clientHeight);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('resize', handleResize);
+      renderer.dispose();
+      scene.clear();
+    };
+  }, []);
+
+  // Intersection observer for section visibility
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -98,14 +231,19 @@ const Projects = () => {
   }, [isVisible]);
 
   return (
-    
-    <section id="projects" ref={sectionRef} className="py-20 bg-gradient-to-b from-gray-900 to-gray-800 relative">
-      {/* Background elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-        <div className="absolute top-10 left-10 w-40 h-40 bg-teal-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-10 right-10 w-60 h-60 bg-purple-500/10 rounded-full blur-3xl"></div>
+    <section id="projects" ref={sectionRef} className="py-20 relative overflow-hidden">
+      {/* Three.js Background */}
+      <div 
+        ref={threeContainerRef} 
+        className="absolute inset-0 w-full h-full z-0"
+        style={{ 
+          background: 'linear-gradient(to bottom, rgb(17, 7, 9), rgb(31, 41, 55))'
+        }}
+      >
+        <canvas ref={canvasRef} className="w-full h-full block"></canvas>
       </div>
       
+      {/* Content overlay */}
       <div className="relative z-10 container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-5xl font-bold mb-4 text-white inline-block relative">
@@ -122,7 +260,7 @@ const Projects = () => {
             <div
               key={index}
               ref={(el) => (projectRefs.current[index] = el)}
-              className={`relative bg-gray-800 rounded-xl overflow-hidden shadow-xl transition-all duration-500 ${
+              className={`relative bg-gray-800/80 backdrop-blur-sm rounded-xl overflow-hidden shadow-xl transition-all duration-500 border border-gray-700/50 ${
                 isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
               }`}
               style={{ 
@@ -136,6 +274,9 @@ const Projects = () => {
               {/* Shine effect overlay */}
               <div className="shine absolute inset-0 w-20 h-20 rounded-full bg-white opacity-0 pointer-events-none mix-blend-overlay"></div>
               
+              {/* Glow effect */}
+              <div className={`absolute -inset-0.5 bg-gradient-to-r from-teal-500 to-purple-500 rounded-xl opacity-0 blur transition duration-700 group-hover:opacity-70 ${activeProject === index ? 'opacity-20' : ''}`}></div>
+              
               {/* Project image with overlay */}
               <div className="relative overflow-hidden group">
                 <img 
@@ -143,7 +284,7 @@ const Projects = () => {
                   alt={project.title} 
                   className="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-80"></div>
               </div>
               
               {/* Project content */}
@@ -155,7 +296,7 @@ const Projects = () => {
                   href={project.link} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="inline-block px-4 py-2 bg-teal-500 text-white rounded-lg transform transition-all duration-300 hover:bg-teal-600 hover:scale-105 hover:shadow-lg"
+                  className="inline-block px-4 py-2 bg-teal-500 text-white rounded-lg transform transition-all duration-300 hover:bg-teal-600 hover:scale-105 hover:shadow-lg hover:shadow-teal-500/20"
                 >
                   View Project
                 </a>
@@ -167,6 +308,9 @@ const Projects = () => {
           ))}
         </div>
       </div>
+      
+      {/* Additional decorative elements */}
+      <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-gray-900 to-transparent z-0 pointer-events-none"></div>
     </section>
   );
 };
