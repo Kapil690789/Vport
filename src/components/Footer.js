@@ -45,18 +45,26 @@ const Footer = () => {
           </div>
 
           {/* Contact info */}
-          <div className="space-y-4">
-            <h3 className="text-2xl font-bold text-white mb-4 relative inline-block">
-              Contact
-              <span className="absolute -bottom-1 left-0 w-1/2 h-0.5 bg-teal-500"></span>
-            </h3>
-            <p className="text-gray-300 flex items-center gap-2">
-              <FaEnvelope className="text-teal-400" />
-              <a href="mailto:kapil19092003@gmail.com" className="hover:text-teal-400 transition-colors">
-                kapil19092003@gmail.com
-              </a>
-            </p>
-          </div>
+          {/* Contact info */}
+<div className="space-y-4">
+  <h3 className="text-2xl font-bold text-white mb-4 relative inline-block">
+    Contact
+    <span className="absolute -bottom-1 left-0 w-1/2 h-0.5 bg-teal-500"></span>
+  </h3>
+  <p className="text-gray-300 flex items-center gap-2">
+    <FaEnvelope className="text-teal-400" />
+    <a href="mailto:kapil19092003@gmail.com" className="hover:text-teal-400 transition-colors">
+      kapil19092003@gmail.com
+    </a>
+  </p>
+  <p className="text-gray-300 flex items-center gap-2">
+    <FaPhone className="text-teal-400" />
+    <a href="tel:7027600736" className="hover:text-teal-400 transition-colors">
+      7027600736
+    </a>
+  </p>
+</div>
+
 
           {/* Social links */}
           <div className="space-y-4">
