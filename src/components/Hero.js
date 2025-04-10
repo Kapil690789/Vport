@@ -751,7 +751,7 @@ const Hero = () => {
                 />
               </motion.a>
               <motion.a
-                href="https://drive.google.com/file/d/1n4vI77QmqIF6CbqzIQF0HrmKfem-oCQZ/view?usp=sharing"
+                href="https://drive.google.com/file/d/1NeBBycChUwjKC89Dbhm2gNiB78KWkuL7/view?usp=sharing"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="relative px-6 md:px-8 py-3 md:py-4 rounded-lg text-base md:text-lg font-semibold border-2 border-white text-white overflow-hidden group"
