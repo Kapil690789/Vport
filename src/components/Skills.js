@@ -1,8 +1,11 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { FaHtml5, FaNodeJs, FaGitAlt, FaJava } from "react-icons/fa"
-import { SiMongodb, SiLinux } from "react-icons/si"
+import { FaHtml5, FaNodeJs, FaGitAlt, FaJava, FaReact, FaPython, FaAws } from "react-icons/fa"
+import { SiMongodb, SiLinux, SiFirebase, SiTypescript } from "react-icons/si"
+import { GoDatabase } from "react-icons/go"
+import { BsTools } from "react-icons/bs"
+import { GiBrain } from "react-icons/gi"
 
 const categories = [
   {
@@ -14,44 +17,59 @@ const categories = [
   },
   {
     title: "Web Development",
-    icon: <FaHtml5 size={40} className="text-orange-500" />,
-    skills: ["HTML", "CSS", "ReactJS", "TailwindCSS", "EJS", "NextJS", "Bootstrap", "Wordpress", "Shadcn Ui"],
-    color: "from-orange-500 to-yellow-500",
-    iconBg: "bg-orange-500/10",
+    icon: <FaReact size={40} className="text-blue-400" />,
+    skills: ["HTML", "CSS", "ReactJS", "TailwindCSS", "EJS", "NextJS", "Bootstrap", "Wordpress", "Shadcn UI"],
+    color: "from-blue-400 to-cyan-500",
+    iconBg: "bg-blue-400/10",
   },
   {
     title: "Backend Development",
     icon: <FaNodeJs size={40} className="text-green-500" />,
-    skills: ["Node.js", "Express.js", "PHP"],
+    skills: ["Node.js", "Express.js", "PHP", "Python", "Firebase"],
     color: "from-green-500 to-teal-500",
     iconBg: "bg-green-500/10",
   },
   {
     title: "Databases",
-    icon: <SiMongodb size={40} className="text-green-500" />,
+    icon: <GoDatabase size={40} className="text-cyan-400" />,
     skills: ["MySQL", "MongoDB"],
-    color: "from-teal-500 to-cyan-500",
-    iconBg: "bg-teal-500/10",
+    color: "from-cyan-400 to-blue-500",
+    iconBg: "bg-cyan-400/10",
   },
   {
-    title: "Tools",
-    icon: <FaGitAlt size={40} className="text-orange-500" />,
+    title: "Development Tools",
+    icon: <BsTools size={40} className="text-yellow-500" />,
     skills: ["Git", "GitHub", "Cpanel", "Render", "Cloudflare", "Docker"],
-    color: "from-blue-500 to-indigo-500",
-    iconBg: "bg-blue-500/10",
+    color: "from-yellow-500 to-amber-500",
+    iconBg: "bg-yellow-500/10",
   },
   {
-    title: "Additional Skills",
-    icon: <SiLinux size={40} className="text-yellow-500" />,
-    skills: ["Data Structures", "Algorithms", "Computer Networks", "Linux", "AWS"],
-    color: "from-purple-500 to-pink-500",
+    title: "Cloud & Infrastructure",
+    icon: <FaAws size={40} className="text-orange-400" />,
+    skills: ["AWS", "Linux", "Firebase"],
+    color: "from-orange-400 to-red-400",
+    iconBg: "bg-orange-400/10",
+  },
+  {
+    title: "Computer Science",
+    icon: <GiBrain size={40} className="text-purple-500" />,
+    skills: ["Data Structures", "Algorithms", "Computer Networks"],
+    color: "from-purple-500 to-violet-500",
     iconBg: "bg-purple-500/10",
+  },
+  {
+    title: "AI & Advanced Skills",
+    icon: <SiTypescript size={40} className="text-blue-600" />,
+    skills: ["AI Agents", "TypeScript", "REST APIs"],
+    color: "from-blue-600 to-indigo-600",
+    iconBg: "bg-blue-600/10",
   },
 ]
 
 const Skills = () => {
   const [isVisible, setIsVisible] = useState(false)
   const [activeCategory, setActiveCategory] = useState(null)
+  const [hoveredSkill, setHoveredSkill] = useState(null)
   const sectionRef = useRef(null)
   const categoryRefs = useRef([])
 
@@ -69,7 +87,7 @@ const Skills = () => {
     return () => observer.disconnect()
   }, [])
 
-  // Floating animation for skill items
+  // Floating animation for background elements
   const getRandomFloat = (min, max) => {
     return Math.random() * (max - min) + min
   }
@@ -78,7 +96,7 @@ const Skills = () => {
     <section
       id="skills"
       ref={sectionRef}
-      className="py-20 bg-gradient-to-b from-gray-800 to-gray-900 relative overflow-hidden"
+      className="py-24 bg-gradient-to-b from-gray-900 to-gray-950 relative overflow-hidden"
     >
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
@@ -102,30 +120,30 @@ const Skills = () => {
 
       <div className="relative z-10 container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-5xl font-bold mb-4 text-white inline-block relative">
-            Skills
-            <span className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-teal-500 to-purple-500"></span>
+          <h2 className="text-5xl font-bold mb-6 text-white inline-block relative">
+            Technical Expertise
+            <span className="absolute -bottom-3 left-0 w-full h-1.5 bg-gradient-to-r from-teal-500 to-purple-500 rounded-full"></span>
           </h2>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Here are the technologies and skills I've worked with
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            My comprehensive toolkit of technologies and skills that I've mastered throughout my software engineering journey
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {categories.map((category, index) => (
             <div
               key={index}
               ref={(el) => (categoryRefs.current[index] = el)}
-              className={`relative bg-gray-800/80 backdrop-blur-sm p-6 rounded-xl shadow-xl transition-all duration-700 ${
+              className={`relative bg-gray-800/60 backdrop-blur-lg p-6 rounded-xl shadow-lg transition-all duration-700 border border-gray-700/50 ${
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-              } hover:shadow-2xl group`}
+              } hover:shadow-2xl group transform hover:-translate-y-1`}
               style={{ transitionDelay: `${index * 100}ms` }}
               onMouseEnter={() => setActiveCategory(index)}
               onMouseLeave={() => setActiveCategory(null)}
             >
-              {/* Gradient border */}
+              {/* Gradient border on hover */}
               <div
-                className="absolute inset-0 rounded-xl bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"
+                className="absolute inset-0 rounded-xl bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"
                 style={{
                   padding: "2px",
                   background: `linear-gradient(90deg, ${category.color.split(" ")[0].replace("from-", "")} 0%, ${category.color.split(" ")[1].replace("to-", "")} 100%)`,
@@ -134,47 +152,101 @@ const Skills = () => {
                 }}
               ></div>
 
+              {/* Glowing effect on hover */}
+              <div
+                className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 blur-xl -z-10"
+                style={{
+                  background: `radial-gradient(circle at center, ${category.color.split(" ")[0].replace("from-", "")} 0%, transparent 70%)`,
+                }}
+              ></div>
+
               {/* Icon with animated background */}
               <div className="flex justify-center mb-6">
                 <div
-                  className={`relative p-4 rounded-full ${category.iconBg} transition-transform duration-500 group-hover:scale-110`}
+                  className={`relative p-5 rounded-full ${category.iconBg} transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg`}
+                  style={{
+                    boxShadow: `0 0 20px ${category.color.split(" ")[0].replace("from-", "")}20`,
+                  }}
                 >
                   <div
                     className="animate-pulse absolute inset-0 rounded-full opacity-75"
                     style={{
-                      background: `radial-gradient(circle, ${category.color.split(" ")[0].replace("from-", "")}20 0%, transparent 70%)`,
+                      background: `radial-gradient(circle, ${category.color.split(" ")[0].replace("from-", "")}30 0%, transparent 70%)`,
                     }}
                   ></div>
                   {category.icon}
                 </div>
               </div>
 
-              {/* Category title */}
+              {/* Category title with animated underline */}
               <h3 className="text-2xl font-bold mb-4 text-white text-center relative">
                 {category.title}
                 <span
-                  className={`absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r ${category.color} transition-all duration-300 group-hover:w-3/4`}
+                  className={`absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r ${category.color} transition-all duration-500 group-hover:w-full rounded-full`}
                 ></span>
               </h3>
 
-              {/* Skills list with staggered animation */}
-              <ul className="space-y-2">
+              {/* Skills list with hover animations */}
+              <ul className="space-y-2.5">
                 {category.skills.map((skill, i) => (
                   <li
                     key={i}
-                    className="text-gray-300 hover:text-teal-400 transition-all duration-300 transform hover:translate-x-1"
+                    className="text-gray-300 transition-all duration-300 transform pl-4 border-l-2 border-transparent hover:border-l-2"
                     style={{
                       transitionDelay: `${i * 50}ms`,
-                      opacity: activeCategory === index ? 1 : 0.8,
-                      transform: activeCategory === index ? "translateX(5px)" : "translateX(0)",
+                      opacity: activeCategory === index || activeCategory === null ? 1 : 0.7,
+                      transform: 
+                        hoveredSkill === `${index}-${i}` 
+                          ? "translateX(8px)" 
+                          : activeCategory === index 
+                            ? "translateX(4px)" 
+                            : "translateX(0)",
+                      borderColor: hoveredSkill === `${index}-${i}` 
+                        ? category.color.split(" ")[0].replace("from-", "") 
+                        : "transparent"
                     }}
+                    onMouseEnter={() => setHoveredSkill(`${index}-${i}`)}
+                    onMouseLeave={() => setHoveredSkill(null)}
                   >
-                    • {skill}
+                    <span 
+                      style={{
+                        color: hoveredSkill === `${index}-${i}` 
+                          ? category.color.split(" ")[0].replace("from-", "") 
+                          : ""
+                      }}
+                      className="font-medium"
+                    >
+                      {skill}
+                    </span>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Stats section highlighting experience */}
+      <div className="mt-20 relative z-10">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div className="bg-gray-800/40 backdrop-blur-lg p-6 rounded-xl border border-gray-700/50">
+              <div className="text-4xl font-bold text-teal-400 mb-2">240+</div>
+              <div className="text-gray-300">LeetCode Problems</div>
+            </div>
+            <div className="bg-gray-800/40 backdrop-blur-lg p-6 rounded-xl border border-gray-700/50">
+              <div className="text-4xl font-bold text-purple-400 mb-2">70+</div>
+              <div className="text-gray-300">GeeksforGeeks Problems</div>
+            </div>
+            <div className="bg-gray-800/40 backdrop-blur-lg p-6 rounded-xl border border-gray-700/50">
+              <div className="text-4xl font-bold text-blue-400 mb-2">8+</div>
+              <div className="text-gray-300">Technologies Mastered</div>
+            </div>
+            <div className="bg-gray-800/40 backdrop-blur-lg p-6 rounded-xl border border-gray-700/50">
+              <div className="text-4xl font-bold text-red-400 mb-2">3+</div>
+              <div className="text-gray-300">Years Coding Experience</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -194,4 +266,3 @@ const Skills = () => {
 }
 
 export default Skills
-
