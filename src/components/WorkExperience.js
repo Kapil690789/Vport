@@ -6,11 +6,19 @@ import { useEffect, useRef, useState } from "react"
 const workExperiences = [
   {
     title: "Software Engineer Intern",
+    company: "Flock AI (New York)",
+    date: "May 2024 - Present",
+    description:
+      "Developed AI-powered 3D image generation systems using Node.js and Django at Flock AI. Architected scalable backend solutions and machine learning pipelines while collaborating with cross-functional teams to deliver high-performance visual content creation tools.",
+  },
+  {
+    title: "Software Engineer Intern",
     company: "SkillRank (USA)",
-    date: "Feb 2024 - Mar 2025",
+    date: "Jan 2024 - May 2025",
     description:
       "Developed scalable features using React (frontend) and Python/Node.js (backend) for the Civicsight Project. Collaborated with cross-functional teams to optimize performance and ensure high-quality delivery.",
   },
+  
   {
     title: "Website Coordinator",
     company: "Training & Placement Cell, GJUS&T Hisar",
